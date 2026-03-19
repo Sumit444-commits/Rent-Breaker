@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const machineSchema = new mongoose.Schema(
   {
@@ -35,4 +35,4 @@ const machineSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Machine', machineSchema);
+export default mongoose.model('Machine', machineSchema);

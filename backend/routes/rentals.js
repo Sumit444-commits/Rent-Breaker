@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import Rental from '../models/Rental.js';
+import Machine from '../models/Machine.js';
+import { protect, restrictTo } from '../middleware/auth.js';
+
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
-const Rental = require('../models/Rental');
-const Machine = require('../models/Machine');
-const { protect, restrictTo } = require('../middleware/auth');
 
 // GET /api/rentals
 router.get('/', protect, async (req, res) => {
@@ -206,4 +207,4 @@ router.delete('/:id', protect, restrictTo('admin'), async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

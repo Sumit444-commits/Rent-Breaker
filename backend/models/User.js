@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,11 +21,11 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false,
     },
-   role: {
-  type: String,
-  enum: ['admin', 'staff', 'customer'], // Added 'customer'
-  default: 'customer', // Defaulting to customer is safer for public signups
-},
+    role: {
+      type: String,
+      enum: ['admin', 'staff', 'customer'],
+      default: 'customer', 
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -46,4 +46,4 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);

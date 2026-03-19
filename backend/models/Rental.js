@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const rentalSchema = new mongoose.Schema(
   {
@@ -67,4 +67,4 @@ rentalSchema.pre('save', async function (next) {
   next();
 });
 
-module.exports = mongoose.model('Rental', rentalSchema);
+export default mongoose.model('Rental', rentalSchema);

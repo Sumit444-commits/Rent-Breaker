@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-
-exports.protect = async (req, res, next) => {
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+export const protect = async (req, res, next) => {
   try {
     let token;
     // 1) Check for token in headers
@@ -30,7 +29,7 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-exports.restrictTo = (...roles) => {
+export const restrictTo = (...roles) => {
   return (req, res, next) => {
     // roles is an array ['admin']
     if (!roles.includes(req.user.role)) {

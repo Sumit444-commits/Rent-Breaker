@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import { body, validationResult } from 'express-validator';
+import User from '../models/User.js';
+import { protect, restrictTo } from '../middleware/auth.js';
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const { body, validationResult } = require('express-validator');
-const User = require('../models/User');
-const { protect, restrictTo } = require('../middleware/auth');
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -25,7 +26,7 @@ router.post(
     body('password')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters'),
-    body('role').optional().isIn(['admin', 'staff','customer']).withMessage('Invalid role'),
+    body('role').optional().isIn(['admin', 'staff', 'customer']).withMessage('Invalid role'),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -123,4 +124,4 @@ router.patch(
   }
 );
 
-module.exports = router;
+export default router;

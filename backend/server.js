@@ -1,33 +1,44 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const startCronJobs = require('./utils/cronJobs');
-startCronJobs();
+import mongoose from "mongoose";
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
+// 1. Load environment variables FIRST
 dotenv.config();
+
+// 2. Import utilities and routes (Must include .js extensions)
+import startCronJobs from "./utils/cronJobs.js";
+import authRoutes from "./routes/auth.js";
+import machineRoutes from "./routes/machines.js";
+import customerRoutes from "./routes/customers.js";
+import rentalRoutes from "./routes/rentals.js";
+import maintenanceRoutes from "./routes/maintenance.js";
+import reportRoutes from "./routes/reports.js";
 
 const app = express();
 
-// Middleware
+// 3. Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/machines', require('./routes/machines'));
-app.use('/api/customers', require('./routes/customers'));
-app.use('/api/rentals', require('./routes/rentals'));
-app.use('/api/maintenance', require('./routes/maintenance'));
-app.use('/api/reports', require('./routes/reports'));
+// 4. Start background jobs
+startCronJobs();
 
-// Health check
+// 5. Mount Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/machines', machineRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/rentals', rentalRoutes);
+app.use('/api/maintenance', maintenanceRoutes);
+app.use('/api/reports', reportRoutes);
+
+// 6. Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Rent Breaker API is running' });
 });
 
-// Global error handler
+// 7. Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -36,12 +47,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
+// 8. 404 handler
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// Connect to MongoDB then start server
+// 9. Connect to MongoDB then start server
 const PORT = process.env.PORT || 5000;
 
 mongoose
@@ -54,3 +65,5 @@ mongoose
     console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
   });
+
+export default app;

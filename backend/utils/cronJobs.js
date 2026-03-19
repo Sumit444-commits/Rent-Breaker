@@ -1,5 +1,5 @@
-const cron = require('node-cron');
-const Rental = require('../models/Rental');
+import cron from "node-cron"
+import Rental from "../models/Rental.js";
 
 const startCronJobs = () => {
   // This cron expression '0 0 * * *' means: Run every day at 00:00 (Midnight)
@@ -29,5 +29,4 @@ const startCronJobs = () => {
     }
   });
 };
-
-module.exports = startCronJobs;
+export default startCronJobs
