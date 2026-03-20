@@ -3,10 +3,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// 1. Load environment variables FIRST
 dotenv.config();
 
-// 2. Import utilities and routes (Must include .js extensions)
 import startCronJobs from "./utils/cronJobs.js";
 import authRoutes from "./routes/auth.js";
 import machineRoutes from "./routes/machines.js";
@@ -17,15 +15,21 @@ import reportRoutes from "./routes/reports.js";
 
 const app = express();
 
-// 3. Middleware
-app.use(cors());
+// ✅ Fixed CORS
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 4. Start background jobs
-startCronJobs();
+// ⚠️ Optional: disable cron in serverless
+if (process.env.NODE_ENV !== "production") {
+  startCronJobs();
+}
 
-// 5. Mount Routes
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/machines', machineRoutes);
 app.use('/api/customers', customerRoutes);
@@ -33,12 +37,12 @@ app.use('/api/rentals', rentalRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/reports', reportRoutes);
 
-// 6. Health check
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Rent Breaker API is running' });
 });
 
-// 7. Global error handler
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -47,23 +51,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 8. 404 handler
+// 404
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// 9. Connect to MongoDB then start server
-const PORT = process.env.PORT || 5000;
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ MongoDB connected');
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
-  });
+// ✅ Connect DB (NO app.listen)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB error:", err));
 
 export default app;
