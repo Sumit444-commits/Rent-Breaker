@@ -36,7 +36,7 @@ router.post(
 
     try {
       const { name, email, password, role } = req.body;
-
+    
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res

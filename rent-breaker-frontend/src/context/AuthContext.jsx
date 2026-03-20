@@ -47,7 +47,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       // POST to the register endpoint you created in backend
+      
       const { data } = await api.post('/auth/register', userData);
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.data.user));
       setUser(data.data.user);
